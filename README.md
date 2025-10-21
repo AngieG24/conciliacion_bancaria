@@ -32,6 +32,7 @@ Desarrollar una aplicación que automatice el proceso de conciliación bancaria,
 
 ⚙️ Estructura del proyecto
 conciliacion_bancaria/
+
 │
 ├── app.py                    # Código principal del proyecto
 ├── README.md                 # Documentación del proyecto
