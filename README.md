@@ -1,4 +1,5 @@
 💰 Proyecto: Conciliación Bancaria Automatizada
+
 📖 Descripción
 
 Este proyecto implementa una herramienta de conciliación bancaria automatizada, diseñada para comparar y cruzar información entre extractos bancarios y auxiliares contables.
@@ -6,9 +7,11 @@ Este proyecto implementa una herramienta de conciliación bancaria automatizada,
 La aplicación permite subir archivos en formato Excel, estandarizar su estructura, aplicar reglas de cruce y descargar un reporte conciliado con formato contable.
 El desarrollo combina la potencia de pandas para la manipulación de datos, openpyxl para el formato en Excel y Streamlit como interfaz interactiva.
 
+
 🎯 Objetivo general
 
 Desarrollar una aplicación que automatice el proceso de conciliación bancaria, mejorando la eficiencia y precisión en el control contable.
+
 
 📌 Objetivos específicos
 
@@ -17,6 +20,7 @@ Desarrollar una aplicación que automatice el proceso de conciliación bancaria,
 - Generar un archivo Excel con resultados conciliados y no conciliados, resaltando visualmente las diferencias.
 - Brindar una interfaz sencilla para usuarios del área contable sin necesidad de conocimientos técnicos.
 
+
 🧠 Tecnologías utilizadas
 
 - Python 3.11+
@@ -24,6 +28,7 @@ Desarrollar una aplicación que automatice el proceso de conciliación bancaria,
 - pandas – Limpieza y transformación de datos.
 - openpyxl – Formato y exportación de archivos Excel.
 - re – Expresiones regulares para limpieza de texto.
+
 
 ⚙️ Estructura del proyecto
 conciliacion_bancaria/
@@ -46,6 +51,7 @@ streamlit run app.py
 
 4. Carga los archivos de Extracto y Auxiliar en formato .xlsx y descarga el reporte conciliado.
 
+
 📊 Ejemplo de resultado
 
 - El archivo descargado (conciliacion.xlsx) incluye:
@@ -53,6 +59,7 @@ streamlit run app.py
 - Formato numérico contable.
 - Filas del tipo Extracto resaltadas en color azul.
 - Separador entre registros conciliados y pendientes.
+
 
 👩‍💼 Autora
 
