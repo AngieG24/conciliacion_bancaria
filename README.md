@@ -2,7 +2,7 @@
 
 📖 Descripción
 
-Este proyecto implementa una herramienta de conciliación bancaria automatizada, diseñada para comparar y cruzar información entre extractos bancarios y auxiliares contables.
+Este proyecto implementa una herramienta de conciliación bancaria automatizada para la empresa en la cual trabajo actualmente, diseñada para comparar y cruzar información entre extractos bancarios y auxiliares contables.
 
 La aplicación permite subir archivos en formato Excel, estandarizar su estructura, aplicar reglas de cruce y descargar un reporte conciliado con formato contable.
 El desarrollo combina la potencia de pandas para la manipulación de datos, openpyxl para el formato en Excel y Streamlit como interfaz interactiva.
