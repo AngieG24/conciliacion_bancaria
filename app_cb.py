@@ -1,12 +1,15 @@
+# -----------------------------------------------------------------------
+#                             Conciliación bancaria
+#  ----------------------------------------------------------------------
+
 import streamlit as st
 import pandas as pd
 from io import BytesIO
 from openpyxl import load_workbook
+from openpyxl.styles import PatternFill
 import re
 
-# -----------------------------------------------------------------------
-#                             Conciliación bancaria
-#  ----------------------------------------------------------------------
+
 
 # 1. Reglas de trasnformación segun el tipo de fuente 
 
@@ -102,11 +105,14 @@ def transformar_extracto_conciliacion(df, fuente):
 
     df_out_conciliacion['Importe'] = pd.to_numeric(df.iloc[:, columnas['Importe']],errors="coerce").fillna(0)
 
-    # ✅ Columna: Importe 2 (ajuste de signo para Auxiliar)
+    # ✅ Columna: Importe signos invertidos (ajuste de signo para Auxiliar)
     if fuente == "Auxiliar":
-        df_out_conciliacion['Importe 2'] = df_out_conciliacion['Importe'] * -1
+        df_out_conciliacion['Importe invertido'] = df_out_conciliacion['Importe'] * -1
     else:
-        df_out_conciliacion['Importe 2'] = df_out_conciliacion['Importe']
+        df_out_conciliacion['Importe invertido'] = df_out_conciliacion['Importe']
+
+    # ✅ Columna: Valor Absoluto del Importe
+    df_out_conciliacion['Importe Abs'] = df_out_conciliacion['Importe'].abs().fillna(0)
 
     # ✅ Columnas opcionales
 
@@ -128,7 +134,7 @@ def transformar_extracto_conciliacion(df, fuente):
             df_out_conciliacion[col] = ""
 
 
-    df_final_conciliacion = df_out_conciliacion[['Tipo','Cuenta','Fecha', 'Asiento', 'Descripcion', 'Importe', 'Importe 2','Ref 1', 'Ref 2', 'Nid', 'IT Tercero', 'Tercero', 'Responsable', 'Fecha_hora modificacion']]
+    df_final_conciliacion = df_out_conciliacion[['Tipo','Cuenta','Fecha', 'Asiento', 'Descripcion', 'Importe', 'Importe invertido', "Importe Abs", 'Ref 1', 'Ref 2', 'Nid', 'IT Tercero', 'Tercero', 'Responsable', 'Fecha_hora modificacion']]
     return df_final_conciliacion
 
 # 4. Reglas de cruce 
@@ -164,7 +170,6 @@ def conciliar_extractos(df_extracto, df_auxiliar):
             # ✅ Guardar match (conciliados)
             conciliados.append(row_ext.to_dict())
             conciliados.append(row_aux.to_dict())
-
             usados_aux.add(j)
             encontrado = True
             break
@@ -191,9 +196,9 @@ st.title("Conciliación Bancaria")
 col1, col2 = st.columns(2)
 
 with col1:
-    file_extracto = st.file_uploader("Sube archivo de Extracto", type=["xlsx"])
+    file_extracto = st.file_uploader("📄 Sube archivo de Extracto", type=["xlsx"])
 with col2:
-    file_auxiliar = st.file_uploader("Sube archivo de Auxiliar", type=["xlsx"])
+    file_auxiliar = st.file_uploader("📊 Sube archivo de Auxiliar", type=["xlsx"])
 
 if file_extracto and file_auxiliar:
     df_ext_raw = pd.read_excel(file_extracto, header=None, skiprows=1)
@@ -208,7 +213,7 @@ if file_extracto and file_auxiliar:
     st.subheader("Vista previa - Auxiliar")
     st.dataframe(df_aux.head(5))
 
-    # 🔹 Aplicar conciliación
+    # Aplicar conciliación
     df_conciliado = conciliar_extractos(df_ext, df_aux)
 
     st.subheader("Resultado de la conciliación")
@@ -226,8 +231,10 @@ if file_extracto and file_auxiliar:
 
     # Buscar la columna "Importe" y "Tipo"
     col_importes = []
+    col_tipo = None  # ✅ evita NameError
+
     for idx, cell in enumerate(ws[1], 1):  # Fila de encabezados
-        if cell.value in ["Importe", "Importe 2"]:
+        if cell.value in ["Importe", "Importe invertido", "Importe Abs"]:
             col_importes.append(idx)
         if cell.value == "Tipo":
             col_tipo = idx
@@ -242,12 +249,14 @@ if file_extracto and file_auxiliar:
     # Color de fondo para filas con Tipo = Extracto
     fill_extracto = PatternFill(start_color="C5D9F1", end_color="C5D9F1", fill_type="solid")
 
-    if col_tipo:
+    if col_tipo is not None:
         for row in ws.iter_rows(min_row=2, max_row=ws.max_row):
             if row[col_tipo - 1].value == "Extracto":
                 for cell in row:
                     cell.fill = fill_extracto
 
+    else:
+        st.warning("⚠️ No se encontró la columna 'Tipo' en la hoja de conciliación.")
 
     wb.save("conciliacion.xlsx")
 
